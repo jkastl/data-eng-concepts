@@ -20,9 +20,10 @@ task in a DAG, and see what each design choice does to the numbers.
 
 A wrap-up page turns the nine chapters into a checklist for a new pipeline.
 
-This site covers the fundamentals only. Advanced topics (stream processing internals, log-based CDC,
-open table formats, distributed execution, lineage and governance, semantic layers) are left for a
-separate project.
+This site covers the fundamentals only. Advanced topics (stream processing, exactly-once delivery,
+log-based CDC, open table formats, distributed execution, lineage and governance, semantic layers)
+live in [data-eng-advanced](https://github.com/jkastl/data-eng-advanced)
+([live](https://jkastl.github.io/data-eng-advanced/)).
 
 All data is a few dozen rows generated in the page by seeded formulas, so every visit sees the same
 thing. Nothing is fetched or sent anywhere.
