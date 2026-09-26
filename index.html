@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#121212">
+  <title>Data Engineering Concepts</title>
+  <meta name="description" content="The core ideas of data engineering, one interactive demo at a time: pipelines, loads, modeling, storage, quality and orchestration.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23121212'/%3E%3Cellipse cx='16' cy='8' rx='9' ry='3.5' fill='none' stroke='%237aa7ff' stroke-width='2.4'/%3E%3Cpath d='M7 8v16c0 2 4 3.5 9 3.5s9-1.5 9-3.5V8M7 16c0 2 4 3.5 9 3.5s9-1.5 9-3.5' fill='none' stroke='%237aa7ff' stroke-width='2.4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#/">
+        <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><ellipse cx="16" cy="8" rx="9" ry="3.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M7 8v16c0 2 4 3.5 9 3.5s9-1.5 9-3.5V8M7 16c0 2 4 3.5 9 3.5s9-1.5 9-3.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+        <span>DE Concepts</span>
+      </a>
+      <nav class="topnav" aria-label="Topics">
+        <a href="#/pipelines" data-view="pipelines"><span class="n">1</span>ETL/ELT</a>
+        <a href="#/streaming" data-view="streaming"><span class="n">2</span>Batch/stream</a>
+        <a href="#/idempotency" data-view="idempotency"><span class="n">3</span>Idempotency</a>
+        <a href="#/incremental" data-view="incremental"><span class="n">4</span>Incremental</a>
+        <a href="#/modeling" data-view="modeling"><span class="n">5</span>Modeling</a>
+        <a href="#/scd" data-view="scd"><span class="n">6</span>SCDs</a>
+        <a href="#/storage" data-view="storage"><span class="n">7</span>Storage</a>
+        <a href="#/quality" data-view="quality"><span class="n">8</span>Quality</a>
+        <a href="#/orchestration" data-view="orchestration"><span class="n">9</span>Orchestration</a>
+        <a href="#/next" data-view="next">Next</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================================================================ HOME -->
+    <section class="view" data-view="home" data-short="Home">
+      <div class="hero">
+        <p class="kicker">Data engineering, hands on</p>
+        <h1>Break a pipeline so you know how to build one.</h1>
+        <p>Nine core ideas that every data platform is built on, each with a small working model you can
+          poke. Run the same load twice, move a customer across the country, crash a job halfway, and see
+          what each design choice does to the numbers.</p>
+      </div>
+      <ul class="cards">
+        <li class="card">
+          <p class="kicker">1 · Pipelines</p>
+          <h2><a href="#/pipelines">ETL vs ELT</a></h2>
+          <p>Step a messy export through both pipelines, then change a business rule after the source has
+            deleted its history.</p>
+          <p class="tech">Extract · transform · load · raw layer</p>
+        </li>
+        <li class="card">
+          <p class="kicker">2 · Latency</p>
+          <h2><a href="#/streaming">Batch vs streaming</a></h2>
+          <p>Watch events wait for the next job. Trade freshness against the cost of running more often.</p>
+          <p class="tech">Schedules · micro-batch · freshness · cost</p>
+        </li>
+        <li class="card">
+          <p class="kicker">3 · Reliability</p>
+          <h2><a href="#/idempotency">Idempotent loads</a></h2>
+          <p>Run a load twice, crash it halfway, retry. Only some strategies get the revenue right.</p>
+          <p class="tech">Append · overwrite · merge/upsert · retries</p>
+        </li>
+        <li class="card">
+          <p class="kicker">4 · Change data</p>
+          <h2><a href="#/incremental">Incremental loads</a></h2>
+          <p>Sync only what changed using a watermark, and find the rows it silently misses.</p>
+          <p class="tech">Watermarks · late commits · deletes · lookback</p>
+        </li>
+        <li class="card">
+          <p class="kicker">5 · Modeling</p>
+          <h2><a href="#/modeling">Normalized vs star schema</a></h2>
+          <p>Ask business questions of two designs and count the joins. Then try to rename a category.</p>
+          <p class="tech">3NF · facts · dimensions · grain</p>
+        </li>
+        <li class="card">
+          <p class="kicker">6 · History</p>
+          <h2><a href="#/scd">Slowly changing dimensions</a></h2>
+          <p>A customer moves. Does last year's revenue move with them?</p>
+          <p class="tech">SCD type 1, 2 and 3 · surrogate keys</p>
+        </li>
+        <li class="card">
+          <p class="kicker">7 · Storage</p>
+          <h2><a href="#/storage">Row vs columnar, partitioning</a></h2>
+          <p>See exactly which bytes a query reads, and which files it never has to open.</p>
+          <p class="tech">Parquet · pruning · small files</p>
+        </li>
+        <li class="card">
+          <p class="kicker">8 · Trust</p>
+          <h2><a href="#/quality">Data quality and contracts</a></h2>
+          <p>Switch tests on and off, pick warn, quarantine or fail, and survive an upstream schema change.</p>
+          <p class="tech">Tests · quarantine · schema contracts</p>
+        </li>
+        <li class="card">
+          <p class="kicker">9 · Operations</p>
+          <h2><a href="#/orchestration">Orchestration</a></h2>
+          <p>Run a DAG with limited workers, break a task, retry it, and backfill three missed days.</p>
+          <p class="tech">DAGs · dependencies · retries · backfills</p>
+        </li>
+        <li class="card">
+          <p class="kicker">Wrap-up</p>
+          <h2><a href="#/next">Where this goes next</a></h2>
+          <p>How the nine ideas fit together, and the advanced topics they lead to.</p>
+          <p class="tech">Checklist · further topics</p>
+        </li>
+      </ul>
+      <p class="disclaimer">Every table here is a few dozen rows generated in your browser. Nothing is fetched
+        or sent anywhere. The mechanics are real; the scale is not.</p>
+    </section>
+
+    <!-- ================================================================ 1: PIPELINES -->
+    <section class="view chapter" data-view="pipelines" data-short="ETL vs ELT" data-next="streaming" hidden>
+      <header class="chapter-head">
+        <p class="kicker">1 · Pipelines</p>
+        <h1>ETL vs ELT</h1>
+        <p class="lede">Every pipeline extracts data from somewhere, transforms it into something useful and loads
+          it somewhere people can query. The order of the last two steps matters more than it looks.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Where does the transform run?</h2>
+          <p>An online shop exports its orders as a CSV. It's messy: stray spaces, two date formats, mixed
+            currency case, one order with no amount.</p>
+          <p><strong>ETL</strong> (extract, transform, load) cleans the data on a pipeline server and loads only
+            the finished table. It was the default when warehouse storage and compute were expensive.</p>
+          <p><strong>ELT</strong> (extract, load, transform) copies the raw data into the warehouse first, then
+            transforms it there with SQL. Cheap cloud storage made this the modern default, and tools like dbt
+            are built around it.</p>
+          <p>Both give the same <code>orders</code> table on day one. The difference shows up later, when the
+            rules change.</p>
+          <div class="try"><b>Try it</b>Step through ETL, then press <em>Change the rule</em>. Switch to ELT and
+            do the same. The source app has purged old orders in the meantime.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls" style="margin-bottom:.8rem">
+              <div class="seg" id="p1-mode" role="group" aria-label="Pipeline type">
+                <button data-v="etl" aria-pressed="true">ETL</button>
+                <button data-v="elt" aria-pressed="false">ELT</button>
+              </div>
+              <button class="btn primary" id="p1-next">Run step 1</button>
+              <button class="btn ghost" id="p1-reset">Reset</button>
+            </div>
+            <div class="flow" id="p1-flow"></div>
+            <div class="lanes" id="p1-lanes"></div>
+          </div>
+          <div class="row">
+            <div class="panel">
+              <p class="panel-title">The transform</p>
+              <p class="panel-sub">Rule v1: clean, convert EUR at 1.10, drop rows with no amount</p>
+              <pre class="code" id="p1-code"></pre>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Finance changes the rule</p>
+              <p class="panel-sub">Rule v2: keep the original currency, and flag missing amounts instead of dropping them</p>
+              <div class="controls" style="margin-bottom:.6rem">
+                <button class="btn" id="p1-change">Change the rule and rebuild</button>
+              </div>
+              <p class="msg" id="p1-rebuild-msg"></p>
+            </div>
+          </div>
+          <div class="panel">
+            <p class="panel-title">Rebuilt <code>orders</code> table</p>
+            <div id="p1-rebuild"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 2: STREAMING -->
+    <section class="view chapter" data-view="streaming" data-short="Batch vs streaming" data-next="idempotency" hidden>
+      <header class="chapter-head">
+        <p class="kicker">2 · Latency</p>
+        <h1>Batch vs streaming</h1>
+        <p class="lede">Data is created continuously, but it only becomes useful once it lands where people can
+          query it. How often you move it is a trade between freshness, cost and complexity.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Waiting for the next job</h2>
+          <p>Each dot on the top line is an order placed on the shop. It turns <strong>blue</strong> and drops to
+            the bottom line when a job copies it into the warehouse. <strong>Orange</strong> dots are still
+            waiting. Dashed lines are job runs.</p>
+          <p>A <strong>batch</strong> job processes everything that has piled up since the last run. With an
+            interval of <em>T</em>, the average order waits about <em>T</em>/2.</p>
+          <p><strong>Streaming</strong> handles each event as it arrives. The delay drops to seconds, but a worker
+            has to run all the time, and it has to deal with restarts, duplicates and out-of-order events by
+            itself.</p>
+          <p>Ask what the data is for. A fraud check needs seconds. A monthly finance report is happy with a
+            nightly batch, and much cheaper to run and debug.</p>
+          <div class="try"><b>Try it</b>Move from nightly to streaming and watch the orange backlog shrink while
+            the cost climbs. Is 15 minutes fresh enough for most dashboards?</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls" style="margin-bottom:.7rem">
+              <div class="seg" id="p2-mode" role="group" aria-label="Schedule">
+                <button data-v="daily" aria-pressed="false">Nightly</button>
+                <button data-v="hourly" aria-pressed="true">Hourly</button>
+                <button data-v="m15" aria-pressed="false">15 min</button>
+                <button data-v="micro" aria-pressed="false">Micro-batch</button>
+                <button data-v="stream" aria-pressed="false">Streaming</button>
+              </div>
+              <button class="btn ghost" id="p2-play">Pause</button>
+            </div>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--s2)"></i>Waiting</span>
+              <span><i class="sw" style="background:var(--s1)"></i>In the warehouse</span>
+              <span><i class="sw" style="background:var(--accent);height:2px"></i>Job run</span>
+            </div>
+            <div><canvas class="timeline" id="p2-canvas" role="img" aria-label="Timeline of events and when they become visible"></canvas></div>
+            <p class="callout" id="p2-explain" aria-live="polite"></p>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Avg delay</span><span class="stat-value" id="p2-lat">–</span><span class="stat-note">event to warehouse</span></div>
+            <div class="stat"><span class="stat-label">Waiting now</span><span class="stat-value" id="p2-wait">–</span><span class="stat-note">events not yet loaded</span></div>
+            <div class="stat"><span class="stat-label">Oldest waiting</span><span class="stat-value" id="p2-stale">–</span><span class="stat-note">worst-case staleness</span></div>
+            <div class="stat"><span class="stat-label">Jobs per day</span><span class="stat-value" id="p2-jobs">–</span></div>
+            <div class="stat"><span class="stat-label">Compute per day</span><span class="stat-value" id="p2-cost">–</span><span class="stat-note">units (illustrative)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 3: IDEMPOTENCY -->
+    <section class="view chapter" data-view="idempotency" data-short="Idempotent loads" data-next="incremental" hidden>
+      <header class="chapter-head">
+        <p class="kicker">3 · Reliability</p>
+        <h1>Idempotent loads</h1>
+        <p class="lede">Jobs fail, schedulers retry, and someone always re-runs yesterday by hand. A load is
+          <strong>idempotent</strong> if running it twice leaves the table exactly as running it once.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Run it again. And again.</h2>
+          <p>Today's file has five orders. The <code>sales</code> table already holds two from yesterday.</p>
+          <ul>
+            <li><strong>Append</strong> just inserts. Simple, fast, and every re-run duplicates the day.</li>
+            <li><strong>Overwrite partition</strong> deletes the whole day and re-inserts it inside one
+              transaction. A crash rolls back cleanly, and re-runs are safe.</li>
+            <li><strong>Merge</strong> (upsert) matches on a key: update if it exists, insert if not. Safe to
+              re-run even after a partial crash, and it handles corrections.</li>
+          </ul>
+          <p>The price of safety: overwrite needs a clean partition boundary, and merge needs a reliable unique
+            key and is slower on big tables.</p>
+          <div class="try"><b>Try it</b>With <em>Append</em>, run the load, then run it again. Then reset and
+            try <em>Crash after 3 rows</em> followed by a retry, under each strategy. Finally, correct O-202 upstream
+            and re-run.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls">
+              <div class="seg" id="p3-strategy" role="group" aria-label="Load strategy">
+                <button data-v="append" aria-pressed="true">Append</button>
+                <button data-v="overwrite" aria-pressed="false">Overwrite partition</button>
+                <button data-v="merge" aria-pressed="false">Merge</button>
+              </div>
+            </div>
+            <div class="controls">
+              <button class="btn primary" id="p3-run">Run load</button>
+              <button class="btn danger" id="p3-crash">Run, crash after 3 rows</button>
+              <button class="btn" id="p3-correct">Correct O-202 upstream</button>
+              <button class="btn ghost" id="p3-reset">Reset</button>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Rows in table</span><span class="stat-value" id="p3-rows">–</span></div>
+            <div class="stat"><span class="stat-label">Duplicate rows</span><span class="stat-value" id="p3-dupes">–</span></div>
+            <div class="stat"><span class="stat-label">Today's orders missing</span><span class="stat-value" id="p3-missing">–</span></div>
+            <div class="stat"><span class="stat-label">Revenue in table</span><span class="stat-value" id="p3-rev">–</span><span class="stat-note" id="p3-truth"></span></div>
+          </div>
+          <div class="row">
+            <div class="panel">
+              <p class="panel-title"><code>daily_file</code> for 2026-09-26</p>
+              <div id="p3-file"></div>
+              <p class="panel-title" style="margin-top:1rem">The load</p>
+              <pre class="code" id="p3-sql"></pre>
+            </div>
+            <div class="panel">
+              <p class="panel-title"><code>sales</code> table</p>
+              <div id="p3-table"></div>
+              <p class="panel-title" style="margin-top:1rem">Run log</p>
+              <ul id="p3-log" style="margin:0;padding-left:1rem;font-size:.85rem;color:var(--ink-2)"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 4: INCREMENTAL -->
+    <section class="view chapter" data-view="incremental" data-short="Incremental loads" data-next="modeling" hidden>
+      <header class="chapter-head">
+        <p class="kicker">4 · Change data</p>
+        <h1>Incremental loads</h1>
+        <p class="lede">Copying a whole table every run is simple and always correct, until the table has a
+          billion rows. Incremental loads copy only what changed, and that is harder than it sounds.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>High-water marks and what slips past them</h2>
+          <p>The usual trick: remember the latest <code>updated_at</code> you've seen (the
+            <strong>watermark</strong>) and next time ask only for rows newer than it.</p>
+          <p>Two things break it:</p>
+          <ul>
+            <li><strong>Late commits.</strong> A slow transaction stamps a row at 10:06 but commits at 10:11. By
+              then the watermark has moved past 10:06, and the row is never read.</li>
+            <li><strong>Hard deletes.</strong> A deleted row has no <code>updated_at</code> to find. It lives on in
+              the warehouse forever.</li>
+          </ul>
+          <p>Common fixes: re-read a <strong>lookback window</strong> behind the watermark (and merge, so
+            re-reads don't duplicate), use <strong>soft deletes</strong>, and run a periodic full reload to catch
+            drift. Log-based change data capture avoids both problems by reading the database's own log.</p>
+          <div class="try"><b>Try it</b>Run all four syncs with a plain watermark and see which rows go wrong.
+            Then find the smallest lookback that catches order 5, and turn on soft deletes.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls">
+              <div class="seg" id="p4-strategy" role="group" aria-label="Sync strategy">
+                <button data-v="full" aria-pressed="false">Full reload</button>
+                <button data-v="incremental" aria-pressed="true">Incremental</button>
+              </div>
+              <label class="check"><input type="checkbox" id="p4-soft"> Source uses soft deletes</label>
+            </div>
+            <div class="ctls" id="p4-lookback-wrap" style="margin-top:.7rem;max-width:22rem">
+              <label class="ctl"><span>Lookback window</span><output for="p4-lookback"></output><input id="p4-lookback" type="range" min="0" max="5" step="1" value="0"></label>
+            </div>
+            <div class="controls" style="margin-top:.7rem">
+              <button class="btn primary" id="p4-sync">Run sync</button>
+              <button class="btn ghost" id="p4-reset">Reset</button>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Clock</span><span class="stat-value" id="p4-clock">–</span></div>
+            <div class="stat"><span class="stat-label">Watermark</span><span class="stat-value" id="p4-wm">–</span></div>
+            <div class="stat"><span class="stat-label">Rows read (last / total)</span><span class="stat-value" id="p4-read">–</span></div>
+            <div class="stat"><span class="stat-label">Rows wrong in warehouse</span><span class="stat-value" id="p4-wrong">–</span></div>
+          </div>
+          <div class="row">
+            <div class="panel">
+              <p class="panel-title">Source <code>orders</code></p>
+              <p class="panel-sub">What the app's database holds right now</p>
+              <div id="p4-source"></div>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Warehouse copy</p>
+              <p class="panel-sub">Compared with the source, row by row</p>
+              <div id="p4-target"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <p class="panel-title">Sync log</p>
+            <ul id="p4-log" style="margin:0;padding-left:1rem;font-size:.85rem;color:var(--ink-2);line-height:1.8"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 5: MODELING -->
+    <section class="view chapter" data-view="modeling" data-short="Data modeling" data-next="scd" hidden>
+      <header class="chapter-head">
+        <p class="kicker">5 · Modeling</p>
+        <h1>Normalized vs star schema</h1>
+        <p class="lede">The same shop data can be laid out for the app that writes it or for the analysts who
+          read it. Those two jobs want opposite designs.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Built for writing, or built for reading</h2>
+          <p>A <strong>normalized</strong> (third normal form) schema stores every fact exactly once. A city's
+            region lives in one row of <code>cities</code>. Updates are tiny and can't contradict each other. It's
+            what transactional apps use.</p>
+          <p>A <strong>star schema</strong> puts measurable events in a central <strong>fact</strong> table and
+            describes them with a few wide <strong>dimension</strong> tables. Region is copied onto every
+            customer row. That's redundant on purpose: questions need fewer joins, and the tables read like the
+            business.</p>
+          <p>Decide the <strong>grain</strong> first: one row of <code>fact_sales</code> is one product on one
+            order. Everything else follows from that.</p>
+          <div class="try"><b>Try it</b>Pick each question and compare the highlighted path and the SQL. The last
+            one is a write, not a read.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="seg" id="p5-q" role="group" aria-label="Question">
+              <button data-v="region" aria-pressed="true">Revenue by region and month</button>
+              <button data-v="category" aria-pressed="false">Top categories</button>
+              <button data-v="weekend" aria-pressed="false">Weekend sales by segment</button>
+              <button data-v="rename" aria-pressed="false">Rename a category</button>
+            </div>
+            <p class="callout" id="p5-note" aria-live="polite"></p>
+          </div>
+          <div class="row">
+            <div class="panel">
+              <p class="panel-title">Normalized (3NF)</p>
+              <div class="schema" id="p5-norm-svg"></div>
+              <div class="stats" style="margin:.6rem 0">
+                <div class="stat"><span class="stat-label">Tables touched</span><span class="stat-value" id="p5-norm-tables">–</span></div>
+                <div class="stat"><span class="stat-label" id="p5-norm-joins-l">Joins</span><span class="stat-value" id="p5-norm-joins">–</span></div>
+              </div>
+              <pre class="code" id="p5-norm-sql"></pre>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Star schema</p>
+              <div class="schema" id="p5-star-svg"></div>
+              <div class="stats" style="margin:.6rem 0">
+                <div class="stat"><span class="stat-label">Tables touched</span><span class="stat-value" id="p5-star-tables">–</span></div>
+                <div class="stat"><span class="stat-label" id="p5-star-joins-l">Joins</span><span class="stat-value" id="p5-star-joins">–</span></div>
+              </div>
+              <pre class="code" id="p5-star-sql"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 6: SCD -->
+    <section class="view chapter" data-view="scd" data-short="Slowly changing dimensions" data-next="storage" hidden>
+      <header class="chapter-head">
+        <p class="kicker">6 · History</p>
+        <h1>Slowly changing dimensions</h1>
+        <p class="lede">Dimensions describe things that change: customers move, products get recategorized.
+          When a dimension changes, you have to decide what happens to the facts that came before.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Does history move with the customer?</h2>
+          <ul>
+            <li><strong>Type 1</strong> overwrites the old value. Simple, always current, and it rewrites
+              history: past sales now report under the new city.</li>
+            <li><strong>Type 2</strong> closes the old row and adds a new one with its own
+              <strong>surrogate key</strong> and a validity range. Each sale keeps pointing at the version that
+              was true when it happened.</li>
+            <li><strong>Type 3</strong> adds a <code>previous_city</code> column. Handy for "before and after"
+              comparisons, but it remembers one change only.</li>
+          </ul>
+          <p>Type 1 is right for fixing typos. Type 2 is the default for anything you report history on. The
+            surrogate key is what makes it work: facts join on <code>customer_sk</code>, not on the business
+            key <code>customer_id</code>.</p>
+          <div class="try"><b>Try it</b>Move Ana to Seattle and compare Type 1 with Type 2. Then record a sale
+            for her and move her again.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls">
+              <div class="seg" id="p6-type" role="group" aria-label="SCD type">
+                <button data-v="1" aria-pressed="false">Type 1</button>
+                <button data-v="2" aria-pressed="true">Type 2</button>
+                <button data-v="3" aria-pressed="false">Type 3</button>
+              </div>
+              <span class="lbl">Today is <b id="p6-month" style="color:var(--ink)"></b></span>
+            </div>
+            <div class="controls">
+              <label class="lbl" for="p6-cust">Customer</label>
+              <select id="p6-cust"></select>
+              <label class="lbl" for="p6-city">moves to</label>
+              <select id="p6-city"></select>
+              <button class="btn primary" id="p6-move">Move</button>
+              <button class="btn" id="p6-sale">Record a sale</button>
+              <button class="btn ghost" id="p6-reset">Reset</button>
+            </div>
+          </div>
+          <p class="msg" id="p6-msg" aria-live="polite"></p>
+          <div class="row">
+            <div class="panel">
+              <p class="panel-title"><code>dim_customer</code></p>
+              <div id="p6-dim"></div>
+              <p class="panel-title" style="margin-top:1rem">What a move does</p>
+              <pre class="code" id="p6-sql"></pre>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Revenue by city</p>
+              <p class="panel-sub">Facts joined to the dimension, vs where each sale really happened</p>
+              <div id="p6-report"></div>
+              <p class="panel-title" style="margin-top:1rem"><code>fact_sales</code>, newest first</p>
+              <div id="p6-facts"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 7: STORAGE -->
+    <section class="view chapter" data-view="storage" data-short="Storage layout" data-next="quality" hidden>
+      <header class="chapter-head">
+        <p class="kicker">7 · Storage</p>
+        <h1>Row vs columnar, and partitioning</h1>
+        <p class="lede">In the cloud you pay for bytes scanned. How a table is laid out on disk decides how many
+          bytes a query has to touch.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Read less, pay less</h2>
+          <p>Each small square is one value, colored by column and drawn in the order it sits on disk. Bright
+            squares are the ones this query reads.</p>
+          <p><strong>Row formats</strong> (CSV, Avro, most app databases) store one whole row after another. Great
+            for writing or fetching a single record, but to sum one column you read them all.</p>
+          <p><strong>Columnar formats</strong> (Parquet, ORC, every modern warehouse) store each column together.
+            Analytics touch a few columns of many rows, so they read a fraction of the data, and a column of
+            similar values compresses far better too.</p>
+          <p><strong>Partitioning</strong> splits a table into folders by a column's value. A filter on that
+            column lets the engine skip whole files without opening them, called <strong>pruning</strong>.
+            Partition by something you filter on often and that has a modest number of values. Date is the
+            classic choice.</p>
+          <div class="try"><b>Try it</b>Sum <code>amount</code> in row format, then columnar. Add a filter on
+            date, then partition by date. Finally, partition by customer and watch the file count.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls">
+              <span class="lbl">Format</span>
+              <div class="seg" id="p7-layout" role="group" aria-label="File format">
+                <button data-v="row" aria-pressed="true">Row (CSV)</button>
+                <button data-v="col" aria-pressed="false">Columnar (Parquet)</button>
+              </div>
+            </div>
+            <div class="controls">
+              <span class="lbl">Partition by</span>
+              <div class="seg" id="p7-part" role="group" aria-label="Partition column">
+                <button data-v="none" aria-pressed="true">None</button>
+                <button data-v="order_date" aria-pressed="false">order_date</button>
+                <button data-v="region" aria-pressed="false">region</button>
+                <button data-v="customer" aria-pressed="false">customer</button>
+              </div>
+            </div>
+            <div class="controls">
+              <span class="lbl">Filter</span>
+              <div class="seg" id="p7-filter" role="group" aria-label="Filter">
+                <button data-v="none" aria-pressed="true">None</button>
+                <button data-v="date" aria-pressed="false">order_date = 09-03</button>
+                <button data-v="region" aria-pressed="false">region = West</button>
+              </div>
+            </div>
+            <p class="lbl" style="margin:.8rem 0 .3rem">Columns to select</p>
+            <div class="checks" id="p7-cols"></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Files opened</span><span class="stat-value" id="p7-files-n">–</span></div>
+            <div class="stat"><span class="stat-label">Values read</span><span class="stat-value" id="p7-cells">–</span></div>
+            <div class="stat"><span class="stat-label">Share of table</span><span class="stat-value" id="p7-frac">–</span></div>
+            <div class="stat"><span class="stat-label">Rows returned</span><span class="stat-value" id="p7-rows">–</span></div>
+            <div class="stat"><span class="stat-label">Query cost</span><span class="stat-value" id="p7-cost">–</span><span class="stat-note">values + 12 per file</span></div>
+          </div>
+          <div class="panel">
+            <pre class="code" id="p7-sql" style="margin-bottom:.8rem"></pre>
+            <div class="legend" id="p7-legend"></div>
+            <div class="files" id="p7-files"></div>
+            <p class="msg warn" id="p7-small" style="margin-top:.8rem" hidden>One folder per customer, each holding a
+              couple of rows. Real tables partitioned on a high-cardinality column end up with millions of tiny files,
+              and opening them costs more than reading them. This is the <strong>small files problem</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 8: QUALITY -->
+    <section class="view chapter" data-view="quality" data-short="Data quality" data-next="orchestration" hidden>
+      <header class="chapter-head">
+        <p class="kicker">8 · Trust</p>
+        <h1>Data quality and contracts</h1>
+        <p class="lede">A pipeline that runs without errors can still load garbage. Tests catch bad rows, and a
+          policy decides what happens to them.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>Test the data, not just the code</h2>
+          <p>Today's batch has twelve orders and six problems: a missing email, a negative amount, a duplicate, a
+            made-up country, a product that doesn't exist and an order from next year.</p>
+          <p>The classic tests (as in dbt or Great Expectations) are <strong>not null</strong>,
+            <strong>unique</strong>, <strong>accepted values</strong>, <strong>ranges</strong> and
+            <strong>relationships</strong> (foreign keys).</p>
+          <p>When a test fails, you choose:</p>
+          <ul>
+            <li><strong>Warn:</strong> load everything, log it. Easy to ignore.</li>
+            <li><strong>Quarantine:</strong> load the good rows, set the bad ones aside for review.</li>
+            <li><strong>Fail:</strong> stop the pipeline. Stale data beats wrong data for things like billing.</li>
+          </ul>
+          <p>A <strong>data contract</strong> goes further upstream: the producing team promises a schema, and a
+            breaking change is rejected at the door instead of trickling through as NULLs.</p>
+          <div class="try"><b>Try it</b>Turn tests off one by one and watch the revenue. Then simulate the upstream
+            rename with the contract check on, and again with it off.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <p class="panel-title">Tests</p>
+            <div class="checks" id="p8-checks" style="margin-bottom:.8rem"></div>
+            <div class="controls">
+              <span class="lbl">On failure</span>
+              <div class="seg" id="p8-policy" role="group" aria-label="Failure policy">
+                <button data-v="warn" aria-pressed="false">Warn</button>
+                <button data-v="quarantine" aria-pressed="true">Quarantine rows</button>
+                <button data-v="fail" aria-pressed="false">Fail the pipeline</button>
+              </div>
+            </div>
+            <div class="controls" style="margin-top:.8rem">
+              <label class="check"><input type="checkbox" id="p8-contract" checked> Enforce schema contract</label>
+              <label class="check"><input type="checkbox" id="p8-drift"> Upstream renames <code>amount</code> → <code>amount_usd</code></label>
+            </div>
+          </div>
+          <p class="msg" id="p8-status" aria-live="polite"></p>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Rows loaded</span><span class="stat-value" id="p8-loaded">–</span></div>
+            <div class="stat"><span class="stat-label">Rows failing tests</span><span class="stat-value" id="p8-failing">–</span></div>
+            <div class="stat"><span class="stat-label">Dashboard revenue</span><span class="stat-value" id="p8-rev">–</span><span class="stat-note" id="p8-truth"></span></div>
+          </div>
+          <div class="panel">
+            <p class="panel-title">Incoming batch</p>
+            <div id="p8-batch"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ 9: ORCHESTRATION -->
+    <section class="view chapter" data-view="orchestration" data-short="Orchestration" data-next="next" hidden>
+      <header class="chapter-head">
+        <p class="kicker">9 · Operations</p>
+        <h1>Orchestration</h1>
+        <p class="lede">Real platforms run hundreds of dependent jobs a day. An orchestrator (Airflow, Dagster,
+          Prefect) runs them in the right order, retries what breaks and remembers what ran for which day.</p>
+      </header>
+
+      <div class="step-grid">
+        <div class="prose">
+          <h2>A DAG, run by a scheduler</h2>
+          <p>The pipeline is a <strong>directed acyclic graph</strong>: each task starts only when everything
+            upstream has succeeded. Independent branches run in parallel, limited by the number of
+            <strong>workers</strong>.</p>
+          <p>When a task fails, it's <strong>retried</strong>. That fixes flaky problems like a network blip.
+            If it still fails, everything downstream is marked <strong>upstream failed</strong> and skipped,
+            while unrelated branches carry on.</p>
+          <p>Each run is for a <strong>logical date</strong>. A <strong>backfill</strong> runs the DAG for past
+            dates, say after fixing a bug. That only works if every task is idempotent (chapter 3), so re-running
+            a day replaces it instead of doubling it.</p>
+          <div class="try"><b>Try it</b>Trigger a run. Click <code>extract_products</code> once to make it flaky
+            and run again, then click it again to break it for good. Fix it, clear the failed tasks, and
+            backfill three days.</div>
+        </div>
+        <div class="stage">
+          <div class="panel">
+            <div class="controls">
+              <button class="btn primary" id="p9-trigger">Trigger run</button>
+              <button class="btn" id="p9-clear">Clear failed and re-run</button>
+              <button class="btn" id="p9-backfill">Backfill 3 days</button>
+              <button class="btn ghost" id="p9-reset">Reset</button>
+            </div>
+            <div class="ctls" style="margin-top:.8rem">
+              <label class="ctl"><span>Workers</span><output for="p9-workers"></output><input id="p9-workers" type="range" min="1" max="4" step="1" value="2"></label>
+              <div>
+                <p class="lbl" style="margin:0 0 .3rem">Retries per task</p>
+                <div class="seg" id="p9-retries" role="group" aria-label="Retries">
+                  <button data-v="0" aria-pressed="false">0</button>
+                  <button data-v="1" aria-pressed="true">1</button>
+                  <button data-v="2" aria-pressed="false">2</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><span class="stat-label">Run</span><span class="stat-value" id="p9-run">–</span></div>
+            <div class="stat"><span class="stat-label">Tasks succeeded</span><span class="stat-value" id="p9-ok">–</span></div>
+            <div class="stat"><span class="stat-label">Duration</span><span class="stat-value" id="p9-time">–</span></div>
+            <div class="stat"><span class="stat-label">Runs queued</span><span class="stat-value" id="p9-queue">–</span></div>
+          </div>
+          <div class="panel">
+            <p class="panel-title">DAG</p>
+            <p class="panel-sub">Click a task to cycle it: healthy → flaky (fails its first try) → broken</p>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--good)"></i>Success</span>
+              <span><i class="sw" style="background:var(--accent)"></i>Running</span>
+              <span><i class="sw" style="background:var(--critical)"></i>Failed</span>
+              <span><i class="sw" style="background:var(--warn-ink)"></i>Upstream failed / retry</span>
+            </div>
+            <div class="dag tbl-wrap" id="p9-dag"></div>
+          </div>
+          <div class="panel">
+            <p class="panel-title">Run history</p>
+            <p class="panel-sub">One column per logical date, like Airflow's grid view</p>
+            <div class="tbl-wrap"><div class="grid-runs" id="p9-grid"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ NEXT -->
+    <section class="view chapter" data-view="next" data-short="Where this goes next" hidden>
+      <header class="chapter-head">
+        <p class="kicker">Wrap-up</p>
+        <h1>Where this goes next</h1>
+        <p class="lede">The nine ideas lean on each other. Here's how they combine into a pipeline you can trust,
+          and what lies past the fundamentals.</p>
+      </header>
+
+      <h2 class="section-h">A checklist for any new pipeline</h2>
+      <ul class="checklist">
+        <li><h3>Land raw data first</h3><p>Keep an untouched copy so you can rebuild when the rules change
+          (<a href="#/pipelines">chapter 1</a>).</p></li>
+        <li><h3>Pick latency on purpose</h3><p>Match the schedule to what the data is for, not to what sounds
+          modern (<a href="#/streaming">chapter 2</a>).</p></li>
+        <li><h3>Make every load re-runnable</h3><p>Overwrite a partition or merge on a key, so retries and
+          backfills are safe (<a href="#/idempotency">chapter 3</a>).</p></li>
+        <li><h3>Know what your increments miss</h3><p>Plan for late commits and deletes, and reconcile with a
+          periodic full load (<a href="#/incremental">chapter 4</a>).</p></li>
+        <li><h3>Model for the questions</h3><p>Declare the grain, build facts and dimensions, keep history where
+          it matters (<a href="#/modeling">chapters 5</a> and <a href="#/scd">6</a>).</p></li>
+        <li><h3>Lay out for the reads</h3><p>Columnar formats, partitions on common filters, and no confetti of
+          tiny files (<a href="#/storage">chapter 7</a>).</p></li>
+        <li><h3>Test the data</h3><p>Decide per table whether bad rows warn, quarantine or stop the line
+          (<a href="#/quality">chapter 8</a>).</p></li>
+        <li><h3>Orchestrate and observe</h3><p>Dependencies, retries, alerts and backfills, all written down as
+          code (<a href="#/orchestration">chapter 9</a>).</p></li>
+      </ul>
+
+      <h2 class="section-h">Beyond the fundamentals</h2>
+      <p class="disclaimer" style="margin-bottom:1rem">These advanced topics are deliberately left out of this
+        site and will get their own project.</p>
+      <ul class="checklist">
+        <li><h3>Stream processing in depth</h3><p>Event time vs processing time, windows, watermarks for late
+          events, stateful operators and exactly-once delivery.</p></li>
+        <li><h3>Log-based CDC</h3><p>Reading the database's write-ahead log (Debezium and friends) to capture
+          every insert, update and delete without polling.</p></li>
+        <li><h3>Open table formats</h3><p>Iceberg, Delta Lake and Hudi: ACID transactions, time travel,
+          compaction and schema evolution on object storage.</p></li>
+        <li><h3>Distributed execution</h3><p>Shuffles, data skew, spills, join strategies and why one partition
+          can hold up a thousand-node job.</p></li>
+        <li><h3>Lineage and governance</h3><p>Column-level lineage, catalogs, access control, PII handling and
+          data mesh ownership.</p></li>
+        <li><h3>Semantic layers and cost</h3><p>Metrics defined once for every tool, plus query optimization and
+          warehouse cost control at scale.</p></li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- Version and date are bumped by hand; see README.md. -->
+  <footer class="site">
+    Simulated data only. Runs entirely in your browser.
+    · <a href="https://github.com/jkastl/data-eng-concepts">Source</a> · v1.0.0 · 2026-09-26
+  </footer>
+
+  <script src="js/core.js"></script>
+  <script src="js/pipelines.js"></script>
+  <script src="js/streaming.js"></script>
+  <script src="js/idempotency.js"></script>
+  <script src="js/incremental.js"></script>
+  <script src="js/modeling.js"></script>
+  <script src="js/scd.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/quality.js"></script>
+  <script src="js/orchestration.js"></script>
+  <script>DE.start();</script>
+</body>
+</html>
